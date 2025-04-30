@@ -11,7 +11,7 @@ const MainContainer = () => {
   const {original_title, overview, id} = mainMovie;
   return (
     <div>
-      <VideoTitle title={original_title} overview={overview} />
+      <VideoTitle title="Elemental" overview="In a city where fire, water, land and air residents live together, a fiery young woman and a go-with-the flow guy will discover something elemental: how much they have common" />
       <VideoBackground movieId={id}/>
     </div>
   )
