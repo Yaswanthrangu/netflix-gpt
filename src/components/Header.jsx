@@ -6,8 +6,10 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { addUser, removeUser } from "../utils/userSlice";
 import { useEffect } from "react";
-import {LOGO} from "../utils/constants";
+import {LOGO, SUPPORTED_LANGUAGES} from "../utils/constants";
 import { useState } from "react";
+import { toggleGptSearchView } from "../utils/gptSlice";
+import { changeLanguage } from "../utils/configSlice";
 
 
 const Header = () => {
@@ -15,6 +17,7 @@ const Header = () => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const user = useSelector(store => store.user);
+  const showGptSearch = useSelector(store=>store.gpt.showGptSearch);
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -41,6 +44,14 @@ const Header = () => {
     return () => unSubscribe();
   }, [])
 
+  const handleGptSearchClick = () => {
+    dispatch(toggleGptSearchView());
+  }
+
+  const handleLanguageChange = (e) => {
+    dispatch(changeLanguage(e.target.value));
+  }
+
   return (
     <div className="fixed top-0 left-0 w-screen px-8 py-2 bg-gradient-to-b from-black z-50 flex justify-between">
       <img
@@ -49,26 +60,38 @@ const Header = () => {
         alt="logo"
       />
       {user && (
-        <div className="relative">
-          <img
-            alt="usericon"
-            src={user?.photoURL}
-            className="w-12 h-12 cursor-pointer rounded-full"
-            onClick={() => setShowDropdown(!showDropdown)}
-          />
-          {showDropdown && (
-            <div className="absolute right-0 mt-2 w-32 bg-white rounded shadow-lg z-20">
-              <button
-                onClick={handleSignOut}
-                className="block px-4 py-2 text-black cursor-pointer hover:bg-gray-200 w-full text-left"
-              >
-                Sign Out
-              </button>
-            </div>
-          )}
+        <div className="flex pt-3 items-center">
+          <select className="h-10 px-3 m-1 bg-black text-white text-sm font-medium rounded-md" onChange={handleLanguageChange}>
+            {SUPPORTED_LANGUAGES.map((lang) => (
+              <option key={lang.identifier} value={lang.identifier}>{lang.name}</option>
+            ))}
+          </select>
+          <button className="w-12 h-12 mx-5 cursor-pointer rounded-full bg-red-500" onClick={handleGptSearchClick}>
+            {showGptSearch ? "🏠" : "🔎"}
+          </button>
+          {/* Profile and Dropdown */}
+          <div className="relative">
+            <img
+              alt="usericon"
+              src={user?.photoURL}
+              className="w-12 h-12 cursor-pointer rounded-full"
+              onClick={() => setShowDropdown(!showDropdown)}
+            />
+            {showDropdown && (
+              <div className="absolute right-0 mt-2 w-32 bg-white rounded shadow-lg z-50">
+                <button
+                  onClick={handleSignOut}
+                  className="block px-4 py-2 text-black cursor-pointer hover:bg-gray-200 w-full text-left"
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
   );
+  
 };
 export default Header;
