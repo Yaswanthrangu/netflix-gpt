@@ -1,20 +1,33 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector } from 'react-redux';
+import { useState } from 'react';
 import VideoTitle from "./VideoTitle";
 import VideoBackground from "./VideoBackground";
+import MovieTrailer from "./MovieTrailer";
 
 const MainContainer = () => {
-  const movies = useSelector(store=>store.movies?.nowPlayingMovies);
-  if(!movies) return null;
+  const movies = useSelector(store => store.movies?.nowPlayingMovies);
+  const [showTrailer, setShowTrailer] = useState(false);
+
+  if (!movies) return null;
+
   const mainMovie = movies[0];
+  const { original_title, overview, id } = mainMovie;
 
-  const {original_title, overview, id} = mainMovie;
   return (
-    <div>
-      <VideoTitle title="Elemental" overview="In a city where fire, water, land and air residents live together, a fiery young woman and a go-with-the flow guy will discover something elemental: how much they have common" />
-      <VideoBackground movieId={id}/>
-    </div>
-  )
-}
+    <div className="pt-[40%] bg-black md:p-0 relative">
+      <VideoTitle
+        title={original_title}
+        overview={overview}
+        movieId={id}
+        onPlayClick={() => setShowTrailer(true)}
+      />
+      <VideoBackground movieId={id} />
 
-export default MainContainer
+      {showTrailer && (
+        <MovieTrailer movieId="976573" onClose={() => setShowTrailer(false)} />
+      )}
+    </div>
+  );
+};
+
+export default MainContainer;
